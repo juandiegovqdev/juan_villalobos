@@ -4,20 +4,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "gol.h"
 
 int main()
 {
+	struct gol gol;
 	int i = 0;
-	bool mundos[2][TAM_X][TAM_Y];
 
-	gol_init(mundos[0]);
+	gol_init(&gol);
 	do {
 		printf("\033cIteration %d\n", i++);
-		gol_print(mundos[0]);
-		gol_step(mundos[0], mundos[1]);
+		gol_print(&gol);
+		gol_step(&gol);
 	} while (getchar() != 'q');
 
 	return EXIT_SUCCESS;
