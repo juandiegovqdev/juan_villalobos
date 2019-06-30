@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-struct gol
-{
+struct gol {
+    bool *k;
     bool *mundos[2];
     int x;
     int y;

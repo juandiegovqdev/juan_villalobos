@@ -15,22 +15,20 @@ static void set_cell(struct gol *gol, enum mundo wt, int x, int y, bool a);
 
 bool gol_alloc(struct gol *gol, int x, int y)
 {
-    for (int k = ACTUAL; k <= SIGUIENTE; k++) {
-        gol->mundos[k] = (bool *)malloc(x * y * sizeof(bool));
-        if (!gol->mundos[k]) {
-            return 0;
-        }
+    gol->k = (bool *)malloc(2 * x * y * sizeof(bool));
+    if (!gol->k) { 
+    return 0;
     }
     gol->x = x;
     gol->y = y;
+    gol->mundos[ACTUAL] = gol->k;
+    gol->mundos[SIGUIENTE] = gol->k + x * y;
     return 1;
 }
 
 void gol_free(struct gol *gol)
 {
-    for (int k = ACTUAL; k <= SIGUIENTE; k++) {
-    free(gol->mundos[k]);
-    }
+    free(gol->k);
 }
 
 void gol_init(struct gol *gol)
