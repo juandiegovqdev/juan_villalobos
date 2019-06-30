@@ -4,22 +4,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "gol.h"
 
 #define TAM_X 10
 #define TAM_Y 20
 
-int main () {
+int main ()
+{
         int i = 0;
         struct gol gol;
-        gol_alloc(&gol, TAM_X, TAM_Y);
+        if (!gol_alloc(&gol, TAM_X, TAM_Y)) {
+            fprintf(stderr, "ERROR: Could not allocate memory\n");
+            exit(EXIT_FAILURE);
+        }
         gol_init(&gol);
-        do {
+        do 
+        {
                 printf("\033cIteration %d\n", i++);
                 gol_print(&gol);
                 gol_step(&gol);
         }   while (getchar() != 'q');
             gol_free(&gol);
-        return EXIT_SUCCESS;
+            return EXIT_SUCCESS;
 }

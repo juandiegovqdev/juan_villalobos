@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "gol.h"
+
+#define GET_CELL(gol, x, y) (gol->mundos[wt][x * gol->y + y])
 
 enum mundo {
         ACTUAL,
@@ -9,15 +10,16 @@ enum mundo {
 };
 
 static int count_neighbors(const struct gol *gol, int x, int y);
-static bool get_cell(const struct gol *gol, int x, int y);
+static bool get_cell(const struct gol *gol, enum mundo wt, int x, int y);
 static void set_cell(struct gol *gol, enum mundo wt, int x, int y, bool a);
 
 bool gol_alloc(struct gol *gol, int x, int y)
 {
     for (int k = ACTUAL; k <= SIGUIENTE; k++) {
         gol->mundos[k] = (bool *)malloc(x * y * sizeof(bool));
-        if (!gol->mundos[k]) 
+        if (!gol->mundos[k]) {
             return 0;
+        }
     }
     gol->x = x;
     gol->y = y;
@@ -49,7 +51,7 @@ void gol_print(struct gol *gol)
 {
     for (int x = 0; x < gol->x; x++) {
         for (int y = 0; y < gol->y; y++) {
-            printf("%c ", get_cell(gol, x, y)? '#' : '.');
+            printf("%c ", get_cell(gol, ACTUAL, x, y)? '#' : '.');
         }
         printf("\n");
     }
@@ -60,7 +62,7 @@ void gol_step(struct gol *gol)
     for (int x = 0; x < gol->x; x++) {
         for (int y = 0; y < gol->y; y++) {
             int an = count_neighbors(gol, x, y);
-            if (get_cell(gol, x, y)) {
+            if (get_cell(gol, ACTUAL, x, y)) {
                    bool a = (an == 2) || (an == 3);
                    set_cell(gol, SIGUIENTE, x, y, a);
             }   else {      
@@ -78,21 +80,21 @@ static int count_neighbors(const struct gol *gol, int x, int y)
 {
     int anc = 0;
     
-    anc += get_cell(gol, x - 1, y + 1);
-    anc += get_cell(gol, x, y + 1);
-    anc += get_cell(gol, x + 1, y + 1);
+    anc += get_cell(gol, ACTUAL, x - 1, y + 1);
+    anc += get_cell(gol, ACTUAL, x, y + 1);
+    anc += get_cell(gol, ACTUAL, x + 1, y + 1);
     
-    anc += get_cell(gol, x - 1, y);
-    anc += get_cell(gol, x + 1, y);
+    anc += get_cell(gol, ACTUAL, x - 1, y);
+    anc += get_cell(gol, ACTUAL, x + 1, y);
     
-    anc += get_cell(gol, x - 1, y - 1);
-    anc += get_cell(gol, x, y - 1);
-    anc += get_cell(gol, x + 1, y - 1);
+    anc += get_cell(gol, ACTUAL, x - 1, y - 1);
+    anc += get_cell(gol, ACTUAL, x, y - 1);
+    anc += get_cell(gol, ACTUAL, x + 1, y - 1);
     
     return anc;         
 }
 
-static bool get_cell(const struct gol *gol, int x, int y)
+static bool get_cell(const struct gol *gol, enum mundo wt, int x, int y)
 {
     if(x >= gol->x)
         x = 0;
@@ -102,10 +104,10 @@ static bool get_cell(const struct gol *gol, int x, int y)
         y = 0;
     else if (y < 0)
         y = gol->y - 1;
-    return gol->mundos[ACTUAL][x * gol->y + y];
+    return GET_CELL(gol, x, y);
 }
 
 static void set_cell(struct gol *gol, enum mundo wt, int x, int y, bool a)
 {
-    gol->mundos[wt][x * gol->y + y] = a;
+    GET_CELL(gol, x, y) = a;
 }
